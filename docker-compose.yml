@@ -2,6 +2,7 @@ x-spark-common: &spark-common
   image: apache/spark:3.5.6
   volumes:
     - ./spark/apps:/apps
+    - ./spark/jobs:/jobs
     - ./data:/data
 
 x-airflow-common-env: &airflow-common-env
@@ -96,6 +97,18 @@ services:
     depends_on:
       airflow-init:
         condition: service_completed_successfully
+
+  notebook:
+    image: jupyter/pyspark-notebook:spark-3.5.0
+    container_name: spark-notebook
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./spark/jobs:/jobs
+      - ./notebooks:/home/jovyan/work
+      - ./data:/data
+    depends_on:
+      - spark-master
 
 volumes:
   postgres_data:

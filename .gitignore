@@ -225,4 +225,7 @@ __marimo__/
 
 # Logs
 *logs/
+*data/
 *.log
+*.csv
+*.parquet
