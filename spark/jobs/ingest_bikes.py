@@ -3,7 +3,6 @@ from pyspark.sql import functions as F
 from pyspark.sql.types import *
 import os
 
-
 BRONZE_PATH = "/data/bronze/bikes"
 SOURCE_PATH = "/data/source_data/bikes/*.csv"
 
@@ -21,7 +20,6 @@ bronze_df = (
     df.withColumn("source_file", F.input_file_name())
       .withColumn("ingestion_timestamp", F.current_timestamp())
       .withColumn("load_date", F.current_date())
-      .withColumn("_partition_date", F.to_date(F.col("Start Date")))
 )
 
 bronze_df.write.mode("append").parquet(BRONZE_PATH)
