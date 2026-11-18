@@ -2,11 +2,9 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 import os
 
-SILVER_PATH = "/data/silver/bikes/*.parquet"
+SILVER_PATH = "/data/silver/*.parquet"
 
-POSTGRES_URL = (
-    f"jdbc:postgresql://postgres:5432/{os.getenv('POSTGRES_DB')}"
-)
+POSTGRES_URL = f"jdbc:postgresql://postgres:5432/{os.getenv('POSTGRES_DB')}"
 
 POSTGRES_PROPERTIES = {
     "user": os.getenv("POSTGRES_USER"),
@@ -14,12 +12,7 @@ POSTGRES_PROPERTIES = {
     "driver": "org.postgresql.Driver"
 }
 
-spark = (
-    SparkSession.builder
-    .appName("load-bikes-postgres")
-    .getOrCreate()
-)
-
+spark = SparkSession.builder.appName("load-silver-to-postgres").getOrCreate()
 df = spark.read.parquet(SILVER_PATH)
 
 (
@@ -30,7 +23,7 @@ df = spark.read.parquet(SILVER_PATH)
     .option("user", POSTGRES_PROPERTIES["user"])
     .option("password", POSTGRES_PROPERTIES["password"])
     .option("driver", POSTGRES_PROPERTIES["driver"])
-    .mode("append")
+    .mode("overwrite")
     .save()
 )
 
