@@ -23,7 +23,7 @@ df = spark.read.parquet(SILVER_PATH)
     .option("user", POSTGRES_PROPERTIES["user"])
     .option("password", POSTGRES_PROPERTIES["password"])
     .option("driver", POSTGRES_PROPERTIES["driver"])
-    .mode("overwrite")
+    .mode("append")
     .save()
 )
 

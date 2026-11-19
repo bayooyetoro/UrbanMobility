@@ -9,7 +9,9 @@ x-spark-common: &spark-common
     - ./data:/data
 
 x-airflow-common: &airflow-common
-  image: apache/airflow:3.3.2-python3.12
+  build: .
+  image: urbanmobility-airflow:3.3.2
+  
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
@@ -21,10 +23,15 @@ x-airflow-common: &airflow-common
     AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_API_AUTH_JWT_SECRET}
     AIRFLOW__API_AUTH__JWT_ISSUER: airflow
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    AIRFLOW_CONN_SPARK_DEFAULT: "spark://spark-master:7077?deploy-mode=client"
+
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/plugins:/opt/airflow/plugins
+    - ./data:/data
+    - ./spark/jobs:/jobs:ro
+
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on: &airflow-common-depends-on
     postgres:
